@@ -1,0 +1,8 @@
+name: pi_build_status
+description: Display build statuses on my Pi Unicorn Hat display.
+
+version: 0.0.1
+
+dependencies:
+  json_rpc_2:
+  web_socket_channel:
