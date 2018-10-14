@@ -27,7 +27,7 @@ Future main() async {
         '?' * totalUnknown +
         'R' * totalRunning +
         'P' * totalPass;
-    print(output.substring(0, gridSize));
+    // print(output.substring(0, gridSize));
     for (var x = 0; x < gridSize; x++) {
       statuses[gridSize - 1 - y][x] = output[x];
     }
