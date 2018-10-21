@@ -4,6 +4,7 @@ class BuildResult {
   static BuildResult Pass = new BuildResult._('Pass');
   static BuildResult Fail = new BuildResult._('Fail');
   static BuildResult Flake = new BuildResult._('Flake');
+  static BuildResult Skip = new BuildResult._('Skip');
   final String value;
   BuildResult._(this.value);
 }

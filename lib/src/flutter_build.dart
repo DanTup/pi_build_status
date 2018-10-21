@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:pi_build_status/src/build_results.dart';
+import 'package:pi_build_status/src/utils.dart';
 
 final _buildStatusUrl =
-    Uri.parse("https://flutter-dashboard.appspot.com/api/public/get-status");
+    Uri.parse('https://flutter-dashboard.appspot.com/api/public/get-status');
 
 Future<Project> getBuildResults() async {
-  final proj = new Project("flutter", "Flutter");
+  final proj = new Project('flutter', 'Flutter');
   final res = json.decode(await fetch(_buildStatusUrl));
   List statuses = res['Statuses'];
   if (statuses != null && statuses.isNotEmpty) {
@@ -53,17 +53,6 @@ Future<Project> getBuildResults() async {
     proj.commitResults.add(commitResult);
   });
   return proj;
-}
-
-Future<String> fetch(Uri uri) async {
-  final client = new HttpClient();
-  try {
-    final req = await client.getUrl(uri);
-    final resp = await req.close();
-    return resp.transform(utf8.decoder).join();
-  } finally {
-    client.close();
-  }
 }
 
 BuildResult buildResultFor(String result, [int attempts = 1]) {
