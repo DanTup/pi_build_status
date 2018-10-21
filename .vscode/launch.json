@@ -5,8 +5,14 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Dart",
+			"name": "Update",
 			"program": "bin/update.dart",
+			"request": "launch",
+			"type": "dart"
+		},
+		{
+			"name": "Turn Off",
+			"program": "bin/off.dart",
 			"request": "launch",
 			"type": "dart"
 		}
