@@ -53,28 +53,52 @@ void populateFlutterColumns(Project proj, List<List<String>> statuses,
 
 void populateDartCodeColumns(Project proj, List<List<String>> statuses,
     {int startColumn = 0, int endColumn = gridSize - 1}) {
-  final winResults = proj.commitResults.first.taskResults.values
+  final win = proj.commitResults.first.taskResults.values
       .where((tr) => tr.task.id.startsWith('win_'))
       .toList();
-  final macResults = proj.commitResults.first.taskResults.values
+  final mac = proj.commitResults.first.taskResults.values
       .where((tr) => tr.task.id.startsWith('osx_'))
       .toList();
-  final linuxResults = proj.commitResults.first.taskResults.values
+  final linux = proj.commitResults.first.taskResults.values
       .where((tr) => tr.task.id.startsWith('linux_'))
       .toList();
-  // We'll render a column for each platform, stable first, then a space, then
-  // all unstables merged together.
-  final List<List<TaskResult>> cols = [
-    winResults.where((tr) => tr.task.id.endsWith('_stable_stable')).toList(),
-    macResults.where((tr) => tr.task.id.endsWith('_stable_stable')).toList(),
-    linuxResults.where((tr) => tr.task.id.endsWith('_stable_stable')).toList(),
+  // We'll render in 4 seconds to fit into the first 8 cols
+  // each section is Win/Mac/Linux
+  //
+  // Stable Dart / Stable Code    |     Stable Dart / Insiders Code
+  // --------------------------------------------------------------
+  // Dev Dart / Stable Code       |     Dev Dart / Insiders Code
+  int startRow = 0;
+  startRow = renderGroups(stableDartStableCode, stableDartInsidersCode, win,
+      mac, linux, endColumn, startColumn, startRow, statuses);
+  startRow++; // Leave a gap
+  startRow = renderGroups(devDartStableCode, devDartInsidersCode, win, mac,
+      linux, endColumn, startColumn, startRow, statuses);
+}
+
+int renderGroups(
+    bool col1(TaskResult tr),
+    bool col2(TaskResult tr),
+    List<TaskResult> win,
+    List<TaskResult> mac,
+    List<TaskResult> linux,
+    int endColumn,
+    int startColumn,
+    int startRow,
+    List<List<String>> statuses) {
+  final List<Iterable<TaskResult>> cols = [
+    win.where(col1),
+    mac.where(col1),
+    linux.where(col1),
     [],
-    winResults.where((tr) => !tr.task.id.endsWith('_stable_stable')).toList(),
-    macResults.where((tr) => !tr.task.id.endsWith('_stable_stable')).toList(),
-    linuxResults.where((tr) => !tr.task.id.endsWith('_stable_stable')).toList(),
+    win.where(col2),
+    mac.where(col2),
+    linux.where(col2),
   ];
+  var renderedRows = 0;
   for (var x = 0; x < min(cols.length, endColumn - startColumn); x++) {
-    final results = cols[x];
+    final results = cols[x].toList();
+    renderedRows = max(renderedRows, results.length);
     final res = groupBy(results, (TaskResult v) => v.result);
     final totalUnknown = res[BuildResult.Unknown]?.length ?? 0;
     final totalRunning = res[BuildResult.Running]?.length ?? 0;
@@ -87,11 +111,19 @@ void populateDartCodeColumns(Project proj, List<List<String>> statuses,
         'R' * totalRunning +
         'P' * totalPass +
         ' ' * gridSize;
-    for (var y = 0; y < gridSize; y++) {
-      statuses[y][x + startColumn] = output[y];
+    for (var y = 0; y < gridSize - startRow; y++) {
+      statuses[y + startRow][x + startColumn] = output[y];
     }
   }
+  return startRow + renderedRows;
 }
+
+bool stableDartStableCode(TaskResult tr) =>
+    tr.task.id.endsWith('_stable_stable');
+bool stableDartInsidersCode(TaskResult tr) =>
+    tr.task.id.endsWith('_stable_insiders');
+bool devDartStableCode(TaskResult tr) => tr.task.id.endsWith('_dev_stable');
+bool devDartInsidersCode(TaskResult tr) => tr.task.id.endsWith('_dev_insiders');
 
 Future sendStatuses(List<List<String>> statuses) async {
   final pixels = statuses.map((row) => row.map(charToColour).toList()).toList();
