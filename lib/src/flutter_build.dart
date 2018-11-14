@@ -64,6 +64,8 @@ BuildResult buildResultFor(String result, [int attempts = 1]) {
     case 'In Progress':
       return BuildResult.Running;
     case 'New':
+    case 'Stuck':
+    case 'Skip':
       return BuildResult.Unknown;
     default:
       throw 'Unknown build status: $result';
