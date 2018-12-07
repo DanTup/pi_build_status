@@ -16,8 +16,6 @@ const platforms = ['win', 'osx', 'linux'];
 const dartVersions = ['stable', 'dev'];
 const codeVersions = ['stable', 'insiders'];
 
-// TODO: This makes a lot of HTTP requests; make it better (this will require
-// changing the file we write during builds).
 Future<Project> getBuildResults() async {
   final proj = new Project('dart-code', 'Dart Code');
   final masterBranch = json.decode(await fetch(_gitHubMasterBrancheUrl));
