@@ -56,7 +56,8 @@ Future readResults(String platform, String dartVersion, String codeVersion,
     final numSkipped = int.parse(resultParts[2]);
     // final numPassed = int.parse(resultParts[1]);
 
-    final task = new Task('${platform}_$suiteName',
+    final task = new Task(
+        '${platform}_${suiteName}_${dartVersion}_${codeVersion}',
         '$suiteName ($platform, $dartVersion Dart, $codeVersion VS Code)');
     final taskResult = new TaskResult(
         commit,
