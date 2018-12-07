@@ -10,7 +10,9 @@ Future<String> fetch(Uri uri) async {
   try {
     final req = await client.getUrl(uri);
     final resp = await req.close();
-    return resp.transform(utf8.decoder).join();
+    return resp.statusCode != HttpStatus.ok
+        ? null
+        : resp.transform(utf8.decoder).join();
   } finally {
     client.close();
   }
