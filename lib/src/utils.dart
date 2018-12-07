@@ -2,7 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+var numHttpRequests = 0;
+
 Future<String> fetch(Uri uri) async {
+  numHttpRequests++;
   final client = new HttpClient();
   try {
     final req = await client.getUrl(uri);

@@ -6,6 +6,7 @@ import 'package:pi_build_status/src/flutter_build.dart' as flutter;
 import 'package:pi_build_status/src/dart_code_build.dart' as dartCode;
 import 'package:collection/collection.dart';
 import 'package:json_rpc_2/json_rpc_2.dart' as json_rpc;
+import 'package:pi_build_status/src/utils.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/status.dart' as status;
 
@@ -13,6 +14,7 @@ const gridSize = 16;
 const sendToDisplay = true;
 
 Future main() async {
+  final stopwatch = new Stopwatch()..start();
   final List<List<String>> statuses = new List.generate(
       gridSize, (_) => List.generate(gridSize, (_) => ' ', growable: false),
       growable: false);
@@ -23,9 +25,13 @@ Future main() async {
   final dartCodeBuilds = await dartCode.getBuildResults();
   populateDartCodeColumns(dartCodeBuilds, statuses, endColumn: 7);
 
+  stopwatch.stop();
+
   if (sendToDisplay) {
     await sendStatuses(statuses);
   } else {
+    print(
+        'Took ${stopwatch.elapsedMilliseconds}ms and made ${numHttpRequests} HTTP requests.');
     statuses.forEach(print);
   }
 }
