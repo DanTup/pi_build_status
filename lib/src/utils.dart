@@ -10,9 +10,10 @@ Future<String> fetch(Uri uri) async {
   try {
     final req = await client.getUrl(uri);
     final resp = await req.close();
-    return resp.statusCode != HttpStatus.ok
-        ? null
-        : resp.transform(utf8.decoder).join();
+    // If we don't ready the body and just return null, it seems to hang
+    // and never exit, so we read even if we'll return null.
+    final body = resp.transform(utf8.decoder).join();
+    return resp.statusCode != HttpStatus.ok ? null : body;
   } finally {
     client.close();
   }
