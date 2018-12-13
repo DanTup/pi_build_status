@@ -27,15 +27,18 @@ Future<Project> getBuildResults() async {
   final commitResult = new CommitResult(commit, BuildResult.Unknown);
   proj.commitResults.add(commitResult);
 
+  final futures = <Future>[];
   for (final platform in platforms) {
     for (final dartVersion in dartVersions) {
       for (final codeVersion in codeVersions) {
         // Fetch and parse the CSV summary.
-        await readResults(
-            platform, dartVersion, codeVersion, commit, commitResult);
+        futures.add(readResults(
+            platform, dartVersion, codeVersion, commit, commitResult));
       }
     }
   }
+
+  await Future.wait(futures);
 
   return proj;
 }
