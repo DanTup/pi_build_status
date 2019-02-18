@@ -46,7 +46,8 @@ Future<Project> getBuildResults() async {
         commitResult.taskResults[task['Name']] = new TaskResult(
             commit,
             proj.taskGroups[stage['Name']].tasks[task['Name']],
-            buildResultFor(task['Status'], task['Attempts']));
+            buildResultFor(
+                task['Status'], task['Attempts'], task['Flaky'] == true));
       });
     });
 
@@ -55,12 +56,13 @@ Future<Project> getBuildResults() async {
   return proj;
 }
 
-BuildResult buildResultFor(String result, [int attempts = 1]) {
+BuildResult buildResultFor(String result,
+    [int attempts = 1, bool flaky = false]) {
   switch (result) {
     case 'Succeeded':
       return attempts <= 1 ? BuildResult.Pass : BuildResult.Flake;
     case 'Failed':
-      return BuildResult.Fail;
+      return flaky ? BuildResult.Flake : BuildResult.Fail;
     case 'In Progress':
       return BuildResult.Running;
     case 'New':
