@@ -62,6 +62,7 @@ BuildResult buildResultFor(String result,
     case 'Succeeded':
       return attempts <= 1 ? BuildResult.Pass : BuildResult.Flake;
     case 'Failed':
+    case 'Build Will Fail':
       return flaky ? BuildResult.Flake : BuildResult.Fail;
     case 'In Progress':
       return BuildResult.Running;
