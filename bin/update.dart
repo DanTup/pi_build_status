@@ -155,7 +155,7 @@ List<int> charToColour(String status) {
 }
 
 Future sendPixels(List<List<List<int>>> pixels) async {
-  var socket = IOWebSocketChannel.connect('ws://officepi:8050');
+  var socket = IOWebSocketChannel.connect('ws://officepi.local:8050');
   var client = new json_rpc.Client(socket.cast<String>());
   client.listen();
 
