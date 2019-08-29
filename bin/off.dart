@@ -5,7 +5,7 @@ import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/status.dart' as status;
 
 Future main() async {
-  var socket = IOWebSocketChannel.connect('ws://officepi:8050');
+  var socket = IOWebSocketChannel.connect('ws://officepi.local:8050');
   var client = new json_rpc.Client(socket.cast<String>());
   client.listen();
   await client.sendRequest('off');
